@@ -3,7 +3,7 @@ import fs from 'fs';
 import Arweave from 'arweave';
 import 'dotenv/config';
 
-export const initArweave = async () =>
+export const initArweave = () =>
   Arweave.init({
     host: process.env.ARWEAVE_HOST,
     port: process.env.ARWEAVE_PORT,
@@ -15,3 +15,6 @@ export const initBundlr = async () => {
   const bundlrNetwork = process.env.BUNDLR_NETWORK;
   return new Bundlr(bundlrNetwork, 'arweave', jwk);
 };
+
+
+export const uploadImageFileMythen=()=>process.env.UPLOAD_IMAGE_FILE_MYTHEN
