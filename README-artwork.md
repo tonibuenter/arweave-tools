@@ -1,6 +1,6 @@
-# arweave-tools
+# Artwork 
 
-This is a small collection of arweave scripts for illustration and usage.
+This is a small collection of arweave scripts for illustation and usage.
 
 - [create-wallet.ts](src/create-wallet.ts) : a new arweave wallet is created and save to `./outdata`
 - [wallet-info.ts](src/wallet-info.ts) : read address, balance and loaded balance (on bundlr) from a saved wallet
