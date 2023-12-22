@@ -1,5 +1,29 @@
 # arweave-tools
 
+## Important Note
+
+This package has been deprecated due to:
+
+![img.png](img.png)
+
+
+## Required
+
+- use **node version 20**
+- check/create the `.env` file according to `.env-template` (see below)
+- create a diretory `outdata`
+- `npm install`
+
+
+## Scripts (npm)
+
+- `npm run create-wallet`
+- `npm run wallet-info`
+- `npm run fund-bundlr`
+- `npm run upload-data-bundlr`
+
+## TS files
+
 This is a small collection of arweave scripts for illustration and usage.
 
 - [create-wallet.ts](src/create-wallet.ts) : a new arweave wallet is created and save to `./outdata`
@@ -7,11 +31,6 @@ This is a small collection of arweave scripts for illustration and usage.
 - [fund-bundlr.ts](src/fund-bundlr.ts) : provide funds to a bundlr provider
 - [upload-data-bundlr.ts](src/upload-data-bundlr.ts) : upload a file to arweave blockchain with bundlr
 
-
-## Setups
-
-- `nvm use 20` (node version 20)
-- 'npm install' ...
 
 ### .env
 
@@ -38,8 +57,6 @@ UPLOAD_IMAGE_FILE_MYTHEN=/.../data/mythen.jpg
 
 - **ArConnect** browser extension
 - **Arweave.app** mobile app
-
-
 
 
 ## Examples

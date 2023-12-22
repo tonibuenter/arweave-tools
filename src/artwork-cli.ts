@@ -19,7 +19,7 @@ import { artworkFund } from './artwork-command-fund';
 })();
 
 export async function artworkCommand() {
-  let options;
+  let options: ArtworkCommandLineOptions;
 
   try {
     options = commandLineArgs(artworkCommandDefinitions, {

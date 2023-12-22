@@ -35,16 +35,16 @@ function writeLog() {
 
 export async function artworkUpload(cliOptions: ArtworkCommandLineOptions) {
   _log.length = 0;
-  verbose = cliOptions.verbose;
+  const { dryrun, arweaveHost, arweavePort, arweaveProtocol, outdir, walletfile, bundlrUrl, file, tagfile } =
+    cliOptions;
   log(`*** Start artwork upload ***`);
 
-  if (cliOptions.dryrun) {
+  if (dryrun) {
     log(`Option dryrun detected: no real upload will be done!`);
   }
 
   try {
-    const { arweaveHost, arweavePort, arweaveProtocol } = cliOptions;
-    log(`Initialize Arweave with (host, port, protocol): ${arweaveHost} ${arweavePort} ${arweaveProtocol}`);
+    log(`Try to initialize Arweave with (host, port, protocol): ${arweaveHost} ${arweavePort} ${arweaveProtocol} ...`);
     const arweave = Arweave.init({
       host: arweaveHost,
       port: arweavePort,
@@ -55,7 +55,6 @@ export async function artworkUpload(cliOptions: ArtworkCommandLineOptions) {
     //
     // outdir
     //
-    const outdir = cliOptions.outdir;
     if (!outdir) {
       errorAndExit('missing --outdir option');
     }
@@ -75,7 +74,6 @@ export async function artworkUpload(cliOptions: ArtworkCommandLineOptions) {
     //
     // walletfile and bundlr
     //
-    const walletfile = cliOptions.walletfile;
     if (!walletfile) {
       errorAndExit('missing --walletfile option');
     }
@@ -84,26 +82,25 @@ export async function artworkUpload(cliOptions: ArtworkCommandLineOptions) {
     }
     try {
       const jwk = JSON.parse(fs.readFileSync(walletfile).toString());
-      const bundlrNetwork = cliOptions.bundlrUrl;
-      bundlr = new Bundlr(bundlrNetwork, 'arweave', jwk);
+      bundlr = new Bundlr(bundlrUrl, 'arweave', jwk);
       log(`Found Arweave address ${bundlr.address}`);
     } catch (e) {
-      errorAndExit(`error occurred while reading the walletfile ${walletfile}: ${e.message}`);
+      errorAndExit(`error occurred while reading the wallet file ${walletfile}: ${e.message}`);
     }
     log(`Found walletfile: ${walletfile}`);
 
     //
     // file
     //
-    const filePath = cliOptions.file;
-    if (!filePath) {
+
+    if (!file) {
       errorAndExit('missing --file option');
     }
-    if (!fs.existsSync(filePath)) {
-      errorAndExit(`file ${filePath} does not exist!`);
+    if (!fs.existsSync(file)) {
+      errorAndExit(`file ${file} does not exist!`);
     }
-    const fileEncPath = addToBasename(path.join(outdir, path.basename(filePath)), '-encrypted');
-    log(`Found file (artwork): ${filePath}`);
+    const fileEncPath = addToBasename(path.join(outdir, path.basename(file)), '-encrypted');
+    log(`Found file (artwork): ${file}`);
 
     //
     // tagfile
@@ -111,16 +108,16 @@ export async function artworkUpload(cliOptions: ArtworkCommandLineOptions) {
 
     let tags: Tag[] = [];
 
-    if (cliOptions.tagfile) {
-      if (!fs.existsSync(cliOptions.tagfile)) {
-        errorAndExit(`The tagfile ${cliOptions.tagfile} does not exist!`);
+    if (tagfile) {
+      if (!fs.existsSync(tagfile)) {
+        errorAndExit(`The tagfile ${tagfile} does not exist!`);
       } else {
-        const tagsJson = fs.readFileSync(cliOptions.tagfile, 'utf8');
+        const tagsJson = fs.readFileSync(tagfile, 'utf8');
         log('Try to read tagfile.');
         tags = JSON.parse(tagsJson);
       }
     } else {
-      log('No tagfile provided, will use defaults!');
+      log('No tag file provided, will use defaults!');
     }
 
     //
@@ -133,15 +130,15 @@ export async function artworkUpload(cliOptions: ArtworkCommandLineOptions) {
     log(`Key pair written to ${keyPairPath}!`);
 
     // encrypt file
-    log(`Encrypt file (artwork): ${filePath}`);
-    const buffer = fs.readFileSync(filePath);
+    log(`Encrypt file (artwork): ${file}`);
+    const buffer = fs.readFileSync(file);
     const data = new Uint8Array(buffer);
     const dataSHA512Hash = encodeBase64(hash(data));
     const dataEnc = encrypt(keyPair, data);
     const dataSHA512EncHash = encodeBase64(hash(dataEnc));
     fs.writeFileSync(fileEncPath, Buffer.from(dataEnc));
     log(`Encrypted file (artwork) written to: ${fileEncPath}`);
-    const fileOutPath = path.join(outdir, path.basename(filePath));
+    const fileOutPath = path.join(outdir, path.basename(file));
     fs.writeFileSync(fileOutPath, Buffer.from(data));
     log(`Original file (artwork) written to: ${fileOutPath}`);
 
@@ -151,7 +148,7 @@ export async function artworkUpload(cliOptions: ArtworkCommandLineOptions) {
     fs.writeFileSync(fileEncDecPath, Buffer.from(dataEncDec));
     log(`Encrypted/Decrypted file (artwork) written to: ${fileEncDecPath}`);
 
-    const checkEnc = compareFiles(filePath, fileEncDecPath);
+    const checkEnc = compareFiles(file, fileEncDecPath);
     if (!checkEnc) {
       errorAndExit('There is a serious problem with encrytion/decryption. Can not proceed!');
     } else {
@@ -192,7 +189,7 @@ export async function artworkUpload(cliOptions: ArtworkCommandLineOptions) {
     log(`Estimated AR price: ${price}`);
     log(`Last Arweave transaction ID: ${lastTransactionID}`);
     // create the bundled transaction and sign it
-    if (cliOptions.dryrun) {
+    if (dryrun) {
       log('AR upload will be skipped due to dryrun option!');
     } else {
       // check ar-funding

@@ -6,6 +6,7 @@
     "start": "ts-node src/wallet-info.ts",
     "create-wallet": "ts-node src/create-wallet.ts",
     "fund-bundlr": "ts-node src/fund-bundlr.ts",
+    "wallet-info": "ts-node src/wallet-info.ts",
     "upload-data-bundlr": "ts-node src/upload-data-bundlr.ts",
     "test": "mocha -r ts-node/register ./test/**/*test.ts"
   },
